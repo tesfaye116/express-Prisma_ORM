@@ -23,6 +23,38 @@ export const readPost = async (req, res) => {
         })
     }
 }
+export const createPost = async (req, res) => {
+    try {
+        const { title, content, published, author: { id }
+        } = req.body;
+
+        const newPost = await prisma.post.create({
+            data: {
+                title,
+                content,
+                published,
+                author: {
+                    connect: {
+                        id
+                    }
+                }
+            },
+            include: {
+                author: true
+            }
+        });
+        res.send({
+            status: 'success',
+            data: newPost
+        });
+    } catch (error) {
+        res.send({
+            status: 'error',
+            message: error.message
+        }
+        );
+    }
+}
 
 export const updatePost = async (req, res) => {
 
@@ -58,51 +90,19 @@ export const updatePost = async (req, res) => {
 }
 
 
-export const createPost = async (req, res) => {
-    try {
-        const { title, content, published, author: { id }
-        } = req.body;
-
-        const newPost = await prisma.post.create({
-            data: {
-                title,
-                content,
-                published,
-                author: {
-                    connect: {
-                        id
-                    }
-                }
-            },
-            include: {
-                author: true
-            }
-        });
-        res.send({
-            status: 'success',
-            data: newPost
-        });
-    } catch (error) {
-        res.send({
-            status: 'error',
-            message: error.message
-        }
-        );
-    }
-}
 
 export const deletePost = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const deletePost = await prisma.post.update({
+        const deletePosts = await prisma.post.delete({
             where: {
                 id
             }
         })
         res.json({
             status: "success",
-            message: deletePost
+            message: deletePosts
         })
 
     } catch (error) {
